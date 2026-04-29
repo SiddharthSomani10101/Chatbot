@@ -1,0 +1,93 @@
+COMPANY NAME: ABC CORPORATION
+DOCUMENT: COMPREHENSIVE EMPLOYEE LEAVE POLICY
+EFFECTIVE DATE: 01 JAN 2026
+
+--------------------------------------------------
+
+1. PURPOSE
+This document establishes a standardized framework for employee leave entitlements, application procedures, approval workflows, and compliance requirements. The objective is to ensure fairness, transparency, and operational continuity while supporting employee well-being.
+
+--------------------------------------------------
+
+2. SCOPE
+This policy applies to all full-time employees of ABC Corporation across all departments and locations. Contract employees may be governed by separate agreements.
+
+--------------------------------------------------
+
+3. DEFINITIONS
+- Leave: Approved absence from work during scheduled working days.
+- Manager: Direct reporting authority responsible for approving leave.
+- HR System: Internal platform used for managing employee records and leave applications.
+
+--------------------------------------------------
+
+4. TYPES OF LEAVE
+
+4.1 Annual Leave
+Employees are entitled to 18 working days of paid annual leave per calendar year.
+- Leave is credited on a pro-rata basis at the beginning of each month.
+- Maximum carry-forward limit is 10 days into the next calendar year.
+- Encashment of unused leave is subject to company policy.
+
+4.2 Sick Leave
+Employees are entitled to 10 days of paid sick leave annually.
+- Medical documentation is mandatory for absences exceeding 2 consecutive days.
+- Frequent sick leave patterns may be reviewed by HR.
+
+4.3 Casual Leave
+Employees are eligible for 7 days of casual leave annually.
+- Intended for urgent or unforeseen personal matters.
+- Cannot be combined with long-term leave unless approved.
+
+4.4 Maternity Leave
+Eligible female employees are entitled to 26 weeks of paid maternity leave.
+- Additional unpaid leave may be granted upon request.
+
+4.5 Paternity Leave
+Male employees are entitled to 5 days of paid paternity leave.
+
+4.6 Bereavement Leave
+Employees may avail up to 3 days of leave in case of immediate family bereavement.
+
+4.7 Unpaid Leave
+Employees may apply for unpaid leave under exceptional circumstances.
+- Approval is subject to business requirements and management discretion.
+
+--------------------------------------------------
+
+5. LEAVE APPLICATION PROCESS
+- All leave requests must be submitted via the HR Management System.
+- Employees must apply at least 3 days in advance for planned leave.
+- Emergency leave must be communicated immediately.
+
+--------------------------------------------------
+
+6. LEAVE APPROVAL WORKFLOW
+- Reporting managers review leave requests based on workload and staffing.
+- HR may intervene in case of disputes or policy clarification.
+
+--------------------------------------------------
+
+7. HOLIDAYS
+The company observes 10 public holidays annually.
+A holiday calendar is published at the beginning of each year.
+
+--------------------------------------------------
+
+8. RECORD KEEPING
+All leave records are maintained in the HR system.
+Employees are responsible for regularly reviewing their leave balances.
+
+--------------------------------------------------
+
+9. POLICY VIOLATIONS
+Misuse or falsification of leave information may result in disciplinary action, including termination.
+
+--------------------------------------------------
+
+10. AMENDMENTS
+The company reserves the right to amend this policy at any time.
+
+--------------------------------------------------
+
+END OF DOCUMENT
