@@ -47,35 +47,12 @@ RESPONSE STYLE:
 
 """
 
-@tool
-def read_hr_policy(_input: str = None) -> str:
-    """
-    Reads the HR leave policy document (hr_leave_policy.txt)
-    and returns the full content including:
-    - annual leave
-    - sick leave
-    - company rules
-    """
-    with open("hr_leave_policy.txt", "r", encoding="utf-8") as f:
-        return f.read()
-    
-
-@tool
-def read_large(_input: str = None) -> str:
-    """
-    Reads the Large.txt document that defines IT policies, support procedures,
-    security protocols, and compliance requirements for all employees
-    and returns the full content including
-    """
-    with open("Large.txt", "r", encoding="utf-8") as f:
-        return f.read()    
-
 
 # ---- Setup ----
 llm = ChatOpenAI(model="gpt-4o-mini",api_key="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")
-agent = create_agent(model=llm,tools=[read_hr_policy, read_large],system_prompt=prompt)
+agent = create_agent(model=llm,system_prompt=prompt)
 
-st.set_page_config(page_title="GenAI Chatbot", layout="wide")
+st.set_page_config(page_title="GenAI Chatbot with Vector Embeddings", layout="wide")
 
 st.title("💬 GenAI Chatbot")
 
@@ -88,12 +65,47 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
+def load_file(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        return f.read() 
+
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=400,
+    chunk_overlap=20,
+    separators = [
+    "\n\\d+\\.\\s",        # matches "2. PASSWORD..."
+    "\n\\d+\\.\\d+\\s",    # matches "2.1 Password..."
+    "--------------------------------------------------",
+    "\n\n",
+    "\n",
+]
+)
+
+hr_text = load_file("hr_leave_policy.txt")
+large_text = load_file("Large.txt")
+
+chunks = text_splitter.split_text(hr_text) + text_splitter.split_text(large_text)
+embeddings = OpenAIEmbeddings(api_key="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")
+
+db = FAISS.from_texts(chunks, embeddings)
+
+
 # ---- User Input ----
 prompt = st.chat_input("Ask something...")
 
 if prompt:
     # Store user message
-    st.session_state.messages.append({"role": "user", "content": prompt})
+
+    ans = db.similarity_search(prompt, k=1)
+
+    context = "\n\n".join([doc.page_content for doc in ans])
+
+    print("context=", context)
+
+    
+    st.session_state.messages.append({"role": "user", "content": f""" Context:{context} Question: {prompt}"""})
 
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -104,7 +116,8 @@ if prompt:
          {"messages": st.session_state.messages}
     )
 
-    # print("response =", response)
+    st.session_state.messages.pop()  # Remove the last user message with context
+    st.session_state.messages.append({"role": "user", "content": prompt})  # Add the original user message without context
 
     reply = response["messages"][-1].content
 
@@ -113,3 +126,14 @@ if prompt:
 
     with st.chat_message("assistant"):
         st.markdown(reply)
+
+
+
+
+
+
+
+
+
+
+
