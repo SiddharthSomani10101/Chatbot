@@ -1,3 +1,11 @@
+ # Use LLM chain for compare
+# Evaluate the result for comparision 
+# Evalaute the result for summarization
+# Evaluate the result for factual question answering
+# similarity search for factual question answering change K to adapt according to situation
+
+
+from langchain_protocol import Literal
 import streamlit as st
 from openai import OpenAI
 from langchain.agents import create_agent
@@ -6,6 +14,18 @@ from langchain.tools import tool
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from pydantic import BaseModel
+from typing import Literal
+
+api_key = "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"
+
+class SQLPlan(BaseModel):
+    operation_type: str
+    reasoning_summary: str
+    subquery: str
+
+class Category(BaseModel):
+    category: Literal["summarize", "compare", "reasoning", "factual"]
 
 prompt = """
 You are an intelligent HR Assistant for a company's HR Management System.
@@ -48,11 +68,40 @@ RESPONSE STYLE:
 """
 
 
+
+
+
 # ---- Setup ----
-llm = ChatOpenAI(model="gpt-4o-mini",api_key="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")
-agent = create_agent(model=llm,system_prompt=prompt)
+llm = ChatOpenAI(model="gpt-4o-mini",api_key=api_key)
+agent = create_agent(model=llm,system_prompt=prompt,tools=[generate_sql_query])
 
 st.set_page_config(page_title="GenAI Chatbot with Vector Embeddings", layout="wide")
+
+
+def classify_query(query: str) -> str:
+
+    client = OpenAI(api_key=api_key)
+    response = client.responses.parse(
+        model="gpt-4.1-mini",
+        input=f"""Classify the query into one of these categories:
+
+         1. summarize  - The user is asking for a summary of the entire document.
+
+         2. compare  - The user is asking for differences or similarities between two or more entities, policies, or concepts.
+
+         3. reasoning  - The query requires combining information from multiple sections, interpreting rules, or answering "what happens", "why", or conditional scenarios.
+
+        4. factual  - A direct question that can be answered from a single piece of information or section without combining multiple rules.
+
+        Return JSON in the format:
+        {{"category": "<one_of_the_above>"}}
+
+        Query: {query}
+        """,
+                text_format=Category
+            )
+
+    return response.output_parsed.category
 
 st.title("💬 GenAI Chatbot")
 
@@ -98,11 +147,19 @@ prompt = st.chat_input("Ask something...")
 if prompt:
     # Store user message
 
-    ans = db.similarity_search(prompt, k=1)
+    category = classify_query(prompt)
+    print("category =", category)
 
-    context = "\n\n".join([doc.page_content for doc in ans])
+    if category == "summarize":
+        context = "\n\n".join(chunks)
+    elif category == "factual":
+        ans = db.similarity_search(prompt, k=1)
+        context = "\n\n".join([doc.page_content for doc in ans])
+    elif category == "compare":        
+        ans = db.similarity_search(prompt, k=2)
+        context = "\n\n".join([doc.page_content for doc in ans])
 
-    print("context=", context)
+    #print("context=", context)
 
     
     st.session_state.messages.append({"role": "user", "content": f""" Context:{context} Question: {prompt}"""})
@@ -126,6 +183,11 @@ if prompt:
 
     with st.chat_message("assistant"):
         st.markdown(reply)
+
+
+
+
+            
 
 
 
