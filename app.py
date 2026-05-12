@@ -1,115 +1,113 @@
 import streamlit as st
-from openai import OpenAI
-from langchain.agents import create_agent
-from langchain_openai import ChatOpenAI
-from langchain.tools import tool
-from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from db_queries import *
+from chatbot_vector_embedding import chatbot
 
-prompt = """
-You are an intelligent HR Assistant for a company's HR Management System.
+conn = get_connection()
 
-Your responsibilities include:
-- Answering employee questions about HR policies
-- Explaining company rules in a clear and concise way
-- Assisting with employee-specific queries such as leave balance, manager info, and salary (only when data is available)
+st.set_page_config(page_title="HR Dashboard", layout="wide")
+st.title("🏢 HR Management System")
 
-STRICT RULES:
-1. You must answer ONLY if the answer is explicitly stated in the context.
-   If the question requires interpretation or is ambiguous, respond:
-   This is not explicitly defined in the document.
+page = st.sidebar.radio("Navigation", ["Stream Views", "Manage Database","Chatbot"])
 
-2. For policy-related questions:
-   - Answer based only on company policy documents
-   - Keep responses professional and structured
-3. For employee-specific queries:
-   - Use available tools or data
-   - Do NOT guess values
+# ------------------ PAGE 1: STREAM TABLES ------------------
+if page == "Stream Views":
 
-4. Always be:
-   - Professional
-   - Concise
-   - Helpful
+    st.subheader("📊 Employee Allocation by Stream")
 
-5. If the question is unclear:
-   - Ask a clarification question instead of assuming
+    streams_df = get_streams(conn)
 
-6. Do NOT provide:
-   - Legal advice
-   - Personal opinions
-   - Information outside HR scope
+    for _, row in streams_df.iterrows():
+        st.markdown(f"### 🌐 {row['stream_name']}")
 
-RESPONSE STYLE:
-- Use bullet points when appropriate
-- Keep answers short but informative
-- Highlight key numbers (e.g., leave days, weeks)
+        matrix = get_stream_allocation(conn, row["stream_id"])
 
-"""
+        if matrix.empty:
+            st.info("No data available")
+        else:
+            st.dataframe(matrix, use_container_width=True)
 
-@tool
-def read_hr_policy(_input: str = None) -> str:
-    """
-    Reads the HR leave policy document (hr_leave_policy.txt)
-    and returns the full content including:
-    - annual leave
-    - sick leave
-    - company rules
-    """
-    with open("hr_leave_policy.txt", "r", encoding="utf-8") as f:
-        return f.read()
-    
-
-@tool
-def read_large(_input: str = None) -> str:
-    """
-    Reads the Large.txt document that defines IT policies, support procedures,
-    security protocols, and compliance requirements for all employees
-    and returns the full content including
-    """
-    with open("Large.txt", "r", encoding="utf-8") as f:
-        return f.read()    
+        st.divider()
 
 
-# ---- Setup ----
-llm = ChatOpenAI(model="gpt-4o-mini",api_key="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")
-agent = create_agent(model=llm,tools=[read_hr_policy, read_large],system_prompt=prompt)
+# ------------------ PAGE 2: MANAGE DATABASE ------------------
+elif page == "Manage Database":
 
-st.set_page_config(page_title="GenAI Chatbot", layout="wide")
+    st.subheader("⚙️ Manage Database")
 
-st.title("💬 GenAI Chatbot")
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "Add Employee",
+        "Add Role",
+        "Add Shift",
+        "Assign Employee"
+    ])
 
-# ---- Session State (IMPORTANT) ----
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+    # ---- Add Employee ----
+    with tab1:
+        name = st.text_input("Name")
+        email = st.text_input("Email")
+        dept = st.text_input("Department")
+        join = st.date_input("Joining Date")
 
-# ---- Display Chat History ----
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        if st.button("Add Employee"):
+            add_employee(conn, name, email, dept, str(join))
+            st.success("Employee added!")
 
-# ---- User Input ----
-prompt = st.chat_input("Ask something...")
+    # ---- Add Role ----
+    with tab2:
+        role = st.text_input("Role Name")
+        desc = st.text_area("Description")
 
-if prompt:
-    # Store user message
-    st.session_state.messages.append({"role": "user", "content": prompt})
+        if st.button("Add Role"):
+            add_role(conn, role, desc)
+            st.success("Role added!")
 
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    # ---- Add Shift ----
+    with tab3:
+        shift = st.text_input("Shift Name")
+        start = st.time_input("Start Time")
+        end = st.time_input("End Time")
 
-    # ---- LLM Response ----
+        if st.button("Add Shift"):
+            add_shift(conn, shift, str(start), str(end))
+            st.success("Shift added!")
 
-    response  = agent.invoke(
-         {"messages": st.session_state.messages}
-    )
+    # ---- Add Allocation ----
+    with tab4:
+        emp_df = get_table(conn, "Employee")
+        role_df = get_table(conn, "Role")
+        shift_df = get_table(conn, "Shift")
+        stream_df = get_table(conn, "Stream")
 
-    # print("response =", response)
+        emp = st.selectbox(
+            "Employee",
+            emp_df["employee_id"],
+            format_func=lambda x: emp_df.loc[emp_df["employee_id"] == x, "name"].values[0]
+        )
 
-    reply = response["messages"][-1].content
+        role = st.selectbox(
+            "Role",
+            role_df["role_id"],
+            format_func=lambda x: role_df.loc[role_df["role_id"] == x, "role_name"].values[0]
+        )
 
-    # Store assistant message
-    st.session_state.messages.append({"role": "assistant", "content": reply})
+        shift = st.selectbox(
+            "Shift",
+            shift_df["shift_id"],
+            format_func=lambda x: shift_df.loc[shift_df["shift_id"] == x, "shift_name"].values[0]
+        )
 
-    with st.chat_message("assistant"):
-        st.markdown(reply)
+        stream = st.selectbox(
+            "Stream",
+            stream_df["stream_id"],
+            format_func=lambda x: stream_df.loc[stream_df["stream_id"] == x, "stream_name"].values[0]
+        )
+
+        start = st.date_input("Start Date")
+
+        if st.button("Assign"):
+            add_allocation(conn, emp, role, shift, stream, str(start))
+            st.success("Allocation added!")
+
+# ------------------ PAGE 3: CHATBOT ------------------
+else:
+    chatbot()

@@ -1,0 +1,223 @@
+==============================
+COMPANY POLICY DOCUMENTATION
+==============================
+
+NOTE: This document is compiled from multiple policy versions (v1.2, v2.0, draft updates). Some sections may overlap or be partially outdated.
+
+----------------------------------------
+SECTION 1: GENERAL GUIDELINES
+----------------------------------------
+
+All employees, contractors, vendors must adhere to company policies.
+
+Non-compliance may result in disciplinary action.
+
+In certain cases, violations may not immediately result in termination but may lead to escalation.
+
+---
+
+----------------------------------------
+SECTION 2: LEAVE POLICY (v2.0)
+----------------------------------------
+
+Employees are entitled to:
+- 20 days annual leave
+- 10 sick days
+
+Unused leave can be carried forward for up to 6 months.
+
+NOTE: Previous policy allowed 1 year carry forward.
+
+---
+
+SECTION 2A: LEAVE POLICY (OLD VERSION)
+----------------------------------------
+
+Employees were previously allowed:
+- 18 days annual leave
+
+Carry forward was allowed up to 12 months.
+
+(This section may be outdated)
+
+---
+
+----------------------------------------
+SECTION 3: REMOTE WORK POLICY
+----------------------------------------
+
+Employees may work remotely up to 2 days per week.
+
+Manager approval is required.
+
+Exception:
+- Some teams allow full remote work depending on business needs.
+
+Contractors:
+- Typically not allowed remote access
+- Exceptions must be approved by IT security
+
+---
+
+----------------------------------------
+SECTION 4: IT SECURITY POLICY
+----------------------------------------
+
+4.1 SYSTEM ACCESS
+
+Employees must not share credentials.
+
+Password sharing is strictly prohibited.
+
+---
+
+4.2 SOFTWARE INSTALLATION
+
+Unauthorized software installation is not allowed.
+
+Consequences:
+- Access revocation
+- Warning or disciplinary action
+
+NOTE:
+Repeated violations MAY lead to termination.
+
+---
+
+4.3 DATA SECURITY
+
+Sensitive data must not be:
+- downloaded externally
+- stored on personal devices
+
+However:
+Certain teams may use approved external tools.
+
+---
+
+----------------------------------------
+SECTION 5: INCIDENT REPORTING
+----------------------------------------
+
+All incidents must be reported within 24 hours.
+
+Failure to report:
+- may result in warning
+- in severe cases → disciplinary action
+
+NOTE:
+Some departments allow delayed reporting in exceptional situations.
+
+---
+
+----------------------------------------
+SECTION 6: TERMINATION CONDITIONS
+----------------------------------------
+
+Termination may occur due to:
+
+- repeated policy violations
+- severe misconduct
+- fraud or data misuse
+- security breaches
+
+---
+
+----------------------------------------
+SECTION 6A: TERMINATION (ADDITIONAL NOTES)
+----------------------------------------
+
+Not all violations lead to termination.
+
+Examples:
+- minor policy breaches → warning
+- repeated violations → escalation
+
+---
+
+----------------------------------------
+SECTION 7: FRAUD & COMPLIANCE
+----------------------------------------
+
+Fraud includes:
+- misreporting financial data
+- unauthorized transactions
+
+Immediate termination in most cases.
+
+However:
+Final decision depends on investigation outcome.
+
+---
+
+----------------------------------------
+SECTION 8: CONTRACTOR POLICY
+----------------------------------------
+
+Contractors:
+- have limited system access
+- must follow IT policies
+
+Violation consequences:
+- contract termination
+- access revocation
+
+---
+
+----------------------------------------
+SECTION 9: OPERATIONS POLICY
+----------------------------------------
+
+Employees are assigned shifts based on business needs.
+
+Shift reassignment may happen without prior notice.
+
+Repeated absence:
+- warning
+- possible disciplinary action
+
+---
+
+----------------------------------------
+SECTION 10: DISCIPLINARY ACTIONS
+----------------------------------------
+
+Actions include:
+- warning
+- suspension
+- termination
+
+Decision factors:
+- severity
+- frequency
+- business impact
+
+---
+
+----------------------------------------
+SECTION 11: EXCEPTIONS & OVERRIDES
+----------------------------------------
+
+Certain policies may be overridden by:
+- senior management
+- compliance team
+- legal requirements
+
+These overrides may not be explicitly documented.
+
+---
+
+----------------------------------------
+SECTION 12: AUDIT & MONITORING
+----------------------------------------
+
+All employee activity may be monitored.
+
+Logs include:
+- system access
+- data usage
+- application activity
+
+---
+
+END OF DOCUMENT
