@@ -1,14 +1,52 @@
+import streamlit as st
+
 from langchain.tools import tool
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from db_queries import get_connection
 import os
+from langchain_community.tools.sql_database.tool import QuerySQLCheckerTool, QuerySQLDatabaseTool
 
 
 
 load_dotenv()
 api_key = os.getenv("API_KEY")
+
+
+class SafeQuerySQLDatabaseTool(QuerySQLDatabaseTool):
+
+    def _run(self, query: str, *args, **kwargs):
+
+        # ---- Role restriction ----
+        if  os.getenv("USER_ROLE") == "viewer":
+
+            if any(keyword in query.upper() for keyword in ["INSERT", "UPDATE", "DELETE"]):
+
+                return ("Viewers are restricted to SELECT queries only. ")
+
+
+        # ---- Original execution ----
+        return super()._run(query, *args, **kwargs)
+
+
+class SafeQuerySQLCheckerTool(QuerySQLCheckerTool):
+
+    def _run(self, query: str, *args, **kwargs):
+
+
+        # ---- Role restriction ----
+        if  os.getenv("USER_ROLE") == "viewer":
+
+            if any(keyword in query.upper() for keyword in ["INSERT", "UPDATE", "DELETE"]):
+
+                return ("Viewers are restricted to SELECT queries only. ")
+
+
+
+        # ---- Original execution ----
+        return super()._run(query, *args, **kwargs)
+
 
 
 class SQLPlan(BaseModel):
@@ -69,6 +107,13 @@ def execute_sql_queries(sql_query: str) -> str:
 
         cursor = conn.execute(sql_query)
 
+        conn.commit()
+
+        for row in cursor:
+            print(row)
+
+        print("cursor = ", cursor)
+
         rows = cursor.fetchall()
 
         columns = [description[0] for description in cursor.description]
@@ -114,7 +159,7 @@ def generate_sql_query(user_query: str) -> dict:
     print("running generate_sql_query")
 
     llm = ChatOpenAI(
-        model="gpt-4o-mini",
+        model="gpt-5.4-nano",
         api_key=api_key,
     )
         

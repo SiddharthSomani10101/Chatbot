@@ -20,7 +20,7 @@ class Category(BaseModel):
 
 
 llm = ChatOpenAI(
-    model="gpt-4o-mini",
+    model="gpt-5.4-nano",
     api_key=api_key,
 )
 
@@ -56,14 +56,33 @@ def create_retrieval_tool(db, chunks):
     @tool
     def create_context(query: str) -> str:
         """
-        Generates context for a given user query by performing similarity search
-        on the vector database.
 
-        Depending on the query type, it retrieves relevant chunks of information
-        from the HR policy documents to provide accurate and concise answers.
+        Retrieves relevant HR policy and company document context
+            using vector similarity search.
 
-        Returns:
-        - A string containing the most relevant context for answering the query.
+            This tool should be used when the user query requires:
+            - HR policy information
+            - company rules or compliance details
+            - document summarization
+            - comparison between policies or rules
+            - reasoning across multiple document sections
+            - factual answers from policy documents
+
+            Examples:
+            - What is the leave policy?
+            - Summarize the remote work policy
+            - Compare contractor and employee leave rules
+            - What happens if an employee exceeds leave balance?
+
+            Depending on the query type, the tool may:
+            - summarize relevant sections
+            - retrieve factual chunks
+            - retrieve multiple sections for comparison or reasoning
+
+            Returns:
+            - Relevant document context that the agent can use
+            to generate grounded and accurate responses
+        
         """
         print("running generate_context")
 

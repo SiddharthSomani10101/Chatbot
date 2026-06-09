@@ -1,0 +1,132 @@
+Nano 
+
+1. create a new shift named A with start time 9 AM and end time 3 PM
+
+   Output works but what it displays can be improved 
+   eg it asks to confirm that the shift id is 9,  whcich is not relevant as shift id doent matter to the 
+      user
+
+3. 
+
+which employee has the earliest joining date
+
+      Gives only 1 value
+
+
+4. Remove all employess 
+  
+  1st removes employee allocation then removes employee
+
+
+5. Show employee ratings 
+   Asks if it should inspect schema  
+
+6. Blocked DElete query execution, yet it still asks to provide 
+   access
+
+6. can employees be moved to shift B
+
+   Goes into retrivign context 
+
+
+
+Mini   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from langsmith import traceable
+from datetime import datetime
+import hashlib
+import json
+
+# Simple in-memory state (replace with Redis/DB in prod)
+APP_STATE = {
+    "summary": "",
+    "facts": {},              # e.g. {"employee_count": 5, "shift_b_id": 9}
+    "last_intent_hash": None,
+    "last_result": None,
+    "updated_at": None,
+}
+
+def hash_intent(user_text: str) -> str:
+    return hashlib.sha256(user_text.strip().lower().encode()).hexdigest()
+
+def build_compact_messages(full_messages, summary, k=4):
+    # keep only last k messages + one system summary
+    recent = full_messages[-k:] if len(full_messages) > k else full_messages
+    compact = []
+    if summary:
+        compact.append({
+            "role": "system",
+            "content": f"Conversation summary/state:\n{summary}"
+        })
+    compact.extend(recent)
+    return compact
+
+@traceable(run_type="chain", name="run_agent", project_name="first")
+def run_agent(agent, full_messages):
+    user_text = full_messages[-1]["content"] if full_messages else ""
+    intent_hash = hash_intent(user_text)
+
+    # 1) Idempotency guard: same intent repeated -> return previous result
+    if APP_STATE["last_intent_hash"] == intent_hash and APP_STATE["last_result"] is not None:
+        return {
+            "messages": full_messages + [{
+                "role": "assistant",
+                "content": f"(Reused previous result)\n{APP_STATE['last_result']}"
+            }],
+            "reused": True
+        }
+
+    # 2) Send compact context instead of full chat history
+    compact_messages = build_compact_messages(
+        full_messages,
+        summary=APP_STATE["summary"],
+        k=4
+    )
+
+    result = agent.invoke({"messages": compact_messages})
+
+    # 3) Update rolling state (store only key facts + short summary)
+    final_text = ""
+    if isinstance(result, dict) and "messages" in result and result["messages"]:
+        last = result["messages"][-1]
+        final_text = last.get("content", "") if isinstance(last, dict) else str(last)
+    else:
+        final_text = str(result)
+
+    APP_STATE["last_intent_hash"] = intent_hash
+    APP_STATE["last_result"] = final_text
+    APP_STATE["updated_at"] = datetime.utcnow().isoformat() + "Z"
+
+    # lightweight summary update (replace with better summarizer if needed)
+    APP_STATE["summary"] = (
+        f"Last user intent: {user_text}\n"
+        f"Last assistant response: {final_text[:400]}"
+    )
+
+    return result
+
+
+
+
+    Great—here’s a practical 1-week path: Day 1–2 learn message trimming + rolling summaries, Day 3 add structured state (facts, last_action, pending_confirmation), 
+    Day 4 implement idempotency keys for repeated intents, 
+    Day 5 add tool-routing guards (skip schema/query when cached facts are valid), 
+    Day 6 add persistence per session/thread,
+     Day 7 evaluate with 10 real prompts and compare token/latency before vs after.
+Success criteria: fewer repeated tool calls, lower prompt tokens, and same/better answer quality.
+
+If you want, I can turn this into a checklist mapped directly to your current run_agent(agent, messages) code.
+
